@@ -73,6 +73,10 @@ app.get('/fullscreen', function (req, res) {
   res.render('fullscreen.html');
 });
 
+app.get('/test', function (req, res) {
+  res.render('test.html'); 
+});
+
 app.get('/pagecount', function (req, res) {
   if (db) {
     db.collection('counts').count(function(err, count ){
