@@ -1,10 +1,326 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <title>Phaser</title>
+<!doctype html> 
+<html lang="en"> 
+    <head> 
+        <base href="./public/" target="_">
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="user-scalable=yes width=device-width, initial-scale=1, maximum-scale=1">
+        <title>BombComber</title>
+        <script src="phaser.min.js"></script>
+        <style type="text/css">
+            body {
+                margin: 0;
+            }
+        </style>
     </head>
-    
     <body>
-        <p>Phaser will go here</p>
+
+        <script type="text/javascript">
+            "use strict";
+// Start Phaser instance on Window load            
+            window.onload = function () {
+                
+                // Generate new game instance and set dimensions
+                var game = new Phaser.Game(1000, 700, Phaser.AUTO, '', { 
+                    preload: preload, create: create, update: update });
+                    game.width = 1000;
+                    game.height = 700;
+
+                
+                
+// Main Preload Function for Phaser Game Instance               
+                function preload() {
+                    
+//                    game.input.mouse.stopOnGameOut = true;
+                    game.input.MAX_Pointers = 1
+                    
+                    // load graphics
+                    game.load.atlasJSONHash(
+                        'bombComberImages',
+                        'images/bombComberImages.png',
+                        'images/bombComberImages.json'
+                    );
+                    game.load.image('hudBG', 'images/hudBG.png');
+                    game.load.image('gameover', 'images/gameover.png');
+                    game.load.image('winscreen', 'images/winscreen.png');
+                    game.load.image('win_blank', 'images/win_blank.png');
+
+                }
+                
+                
+
+// Initialize variables for game board dimensions and map layers
+                var tileSize = 50;
+                var bombDensity = 2;
+                var tilew = game.width / tileSize;
+                var tileh = (game.height - 100) / tileSize;
+                var matrix = [];
+                // Game Objects
+                var hud;
+                var bombs;
+                var nums;
+                var tiles;
+                // Layers 
+                var bgLayer;
+                var bombLayer;
+                var numLayer;
+                var tileLayer;
+                // Indexes for Number Layer sprites
+                var numBombs = {
+                    0 : 'num0',
+                    1 : 'num1',
+                    2 : 'num2',
+                    3 : 'num3',
+                    4 : 'num4',
+                    5 : 'num5',
+                    6 : 'num6',
+                    7 : 'num7',
+                    8 : 'num8',
+                    9 : 'num9'
+                }
+                
+                //  Create a layer of tiles
+                function createLayer(defaultValue){
+                    var layer = [];
+                    for ( var x = 0; x < tilew; x++) {
+                        layer[x] = new Array(tileh);
+                        for ( var y = 0; y < tileh; y++) {
+                            layer[x][y] = defaultValue;
+                        }
+                    }
+                    return layer;
+                }
+            
+                
+                
+// Main Create function for Phaser Game Instance                
+                function create() {
+                    
+                    // Prevent context menu on right click
+                    game.canvas.oncontextmenu = function (e) { e.preventDefault(); }
+                    
+                    //Start Physics Engine
+//                    game.physics.startSystem(Phaser.Physics.ARCADE);
+                                             
+                    // Create object groups
+                    hud = game.add.group();
+                    bombs = game.add.group();
+                    nums = game.add.group();
+                    tiles = game.add.group();
+                    
+                    // Enable Physics on any necessary groups
+//                    game.physics.arcade.enable(tiles);          // Is this needed?
+                    // Generate Layers
+                    
+                    bombLayer = createLayer('none');
+                    numLayer = createLayer('none');
+                    tileLayer = createLayer('tile');
+                    
+                    // Generate random bombs
+                    for ( var x = 0; x < tilew; x++) {
+                        for ( var y = 0; y < tileh; y++) {
+                            var drawBomb = (Math.floor(Math.random(10) * 10));
+                            if ( drawBomb < bombDensity ) {
+                                bombLayer[x][y] = 'bomb';
+                            } else {
+                                bombLayer[x][y] = 'none';
+                            }
+                        }
+                    }
+                    
+                    // Generate Number tiles based on adjacent bombs
+                    for ( var x = -1; x < 2; x++) {
+                        for ( var y = -1; y < 2; y++) {
+                           if ( String(x) + String(y) != '00' ) {
+                               matrix[matrix.length] = [x, y];
+                           }
+                        }
+                    }
+                    
+                    // This Counts the bombs adjacent to each square
+                    function countBombs(x, y) {
+                        var count = 0;
+                        for ( var i = 0; i < matrix.length; i++) {
+                            var newX = x + matrix[i][0];
+                            var newY = y + matrix[i][1];
+                            if ( newX >= 0 && newY >= 0 && newX < tilew && newY < tileh){
+                                if (bombLayer[newX][newY] == 'bomb') {
+                                    count +=1;
+                                }
+                            }
+                        }
+                        return count;
+                    }
+                    
+                    // This loops through the board and sets each tile in numLayer to the amount of adjacent bombs
+                    for ( var x = 0; x < tilew; x++) {
+                        for ( var y = 0; y < tileh; y++) {
+                            numLayer[x][y] = countBombs(x,y);   
+                        }
+                    }
+                    
+                    // Draws static elements
+                    drawLayer(bombLayer, bombs, 'bomb');
+                    drawNumLayer();
+                    drawLayer(tileLayer, tiles, 'tile');
+                    hud.create(0, game.height - 100, 'hudBG');
+                    
+                }
+                
+// Create functions for update cycle
+// Should these go in the Create function???
+                function drawNumLayer(){
+
+                    for (var x = 0; x < tilew; x++) {
+                        for (var y = 0; y < tileh; y++) {
+                            var getKey = numLayer[x][y];
+                            if ( bombLayer[x][y] != 'bomb') {
+                                nums.create(
+                                    x * tileSize,
+                                    y * tileSize,
+                                    'bombComberImages',
+                                    'num' + [getKey] + ".png"
+                                );
+                            }
+                        }
+                    }
+                }
+                
+
+                function drawLayer(layerName, groupName, key){
+                    for (var x = 0; x < tilew; x++) {
+                        for (var y = 0; y < tileh; y++) {
+                            if (layerName[x][y] == key) {
+                                var sprite = groupName.create(
+                                    x * tileSize,
+                                    y * tileSize,
+                                    'bombComberImages',
+                                    key + '.png'
+                                );
+                                
+                                if ( key == 'tile') {
+                                sprite.inputEnabled = true;
+                                 
+                                sprite.input.useHandCursor = true;
+                                 
+                                //sprite.events.onInputUp.add(hideSprite, this);
+                                }
+                             }
+                         }
+                    }
+                }
+                
+                function hideSprite (sprite) {
+                    if (sprite.visible = true) {
+                        sprite.visible = false;
+                    } else {
+                        sprite.visible = true;
+                    }
+                
+                }
+                
+                // This will currently click the tile where the pointer left the gameboard
+                // if the mouse leaves to the right side of the game.
+                function getMousePos(){
+                    if (game.input.activePointer.position.x < game.width &&
+                        game.input.activePointer.position.y < game.height - 100 &&
+                       game.input.activePointer.withinGame == true) {
+                        var xPos = Math.floor(game.input.activePointer.position.x / tileSize);
+                        var yPos = Math.floor(game.input.activePointer.position.y / tileSize);
+                        return {x: xPos, y: yPos};
+                    }
+                } 
+                
+                // Returns the index of the tile over which the mouse is hovering
+                function getTile(){
+                    var mPos = getMousePos();
+                    if (mPos !== undefined) {
+                        return {x: mPos.x, y: mPos.y, index: (mPos.x * tileh + mPos.y)};
+                    }
+                }
+                
+                // Checks adjacent tiles for empty squares
+                function checkAdjacent(x, y) {
+                    for ( var i = 0; i < matrix.length; i++) {
+                        var newX = x + matrix[i][0];
+                        var newY = y + matrix[i][1];
+                        if ( newX >= 0 && newY >= 0 && newX < tilew && newY < tileh) {
+                            var index = (newX * tileh + newY);
+                            tiles.children[index].visible = false;
+                        }
+                    }
+                }
+                
+                
+                function tileClick() {
+//                    try {
+                        // Assigns group index of current tile sprite
+                        var currentTile = getTile();
+                        // Handles Right-Click input
+                        if (game.input.activePointer.button != 2) {
+                            if (tiles.children[currentTile.index].visible == true) {
+                                tiles.children[currentTile.index].visible = false;
+                                if (numLayer[currentTile.x][currentTile.y] === 0) {
+                                    checkAdjacent(currentTile.x, currentTile.y);
+                                }
+                            }
+                        // Handles any other input
+                        } else {
+                            if (tiles.children[currentTile.index].frame != 1) {
+                                tiles.children[currentTile.index].frame = 1;
+                            } else {
+                                tiles.children[currentTile.index].frame = 12;
+                            }
+                        }
+//                    } catch(TypeError) {
+//                        // Ignore mouse out of index range
+//                    }
+                }
+                
+
+                
+// Main Update Loop for Phaser Game Instance
+                function update() {
+                    
+                    for (var tile = 0; tile < tiles.children.length; tile++) {
+                        var x = Math.floor(tile / tileh);
+                        var y = (tile % tileh);
+                        if (numLayer[x][y] === 0 && tiles.children[tile].visible == false) {
+                            checkAdjacent(x,y);   
+                        }
+                    }
+                    
+                    // Resets "pressed" tiles (frame 13) to "unpressed" state (frame 12)
+                    var item;
+                    for (item in tiles.children) {
+                        if (tiles.children[item].frame == 13) {
+                            tiles.children[item].frame = 12;
+                        }
+                    }
+                    
+                    // INPUT HANDLING
+                    
+                    // Sets the currently clicked tile to the "pressed" frame (13)
+                    if (game.input.activePointer.isDown && game.input.activePointer.button != 2) {
+                        try { 
+                            var currentTile = getTile();
+                            tiles.children[currentTile.index].frame = 13;
+                        } catch (TypeError) {
+                            // Ignore Mouse out of bounds   
+                        }
+                    }
+                    
+                    // Handles tile clicking for Mobile
+                    game.input.touch.touchEndCallback = tileClick;      // This needs handling for "flagging"
+                    // Handles tile clicking for Desktop
+                    game.input.mouse.mouseUpCallback = tileClick;
+                        
+                }
+                
+// END OF ONLOAD FUNCTION            
+            };
+
+        
+        </script>
+
     </body>
 </html>
