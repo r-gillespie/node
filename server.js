@@ -65,6 +65,10 @@ app.get('/', function (req, res) {
   }
 });
 
+app.get('/somepage', function (req, res) {
+  res.render('somepage.html');
+});
+
 app.get('/phaser', function (req, res) {
   res.render('phaser.html');
 });
