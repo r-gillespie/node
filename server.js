@@ -69,8 +69,8 @@ app.get('/somepage', function (req, res) {
   res.render('somepage.html');
 });
 
-app.get('/phaser', function (req, res) {
-  res.render('phaser.html');
+app.get('/help', function (req, res) {
+  res.render('help.html');
 });
 
 app.get('/fullscreen', function (req, res) {

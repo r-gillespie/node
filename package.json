@@ -1,7 +1,7 @@
 {
-  "name": "nodejs-ex",
+  "name": "Phaser",
   "version": "0.0.1",
-  "description": "Node.js sample app for OpenShift 3",
+  "description": "Openshift 3 Node.js scaffold for Phaser",
   "main": "server.js",
   "dependencies": {
       "express": "*",
@@ -17,12 +17,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/openshift/nodejs-ex.git"
+    "url": "https://github.com/r-gillespie/node"
   },
-  "author": "Steve Speicher <sspeiche@gmail.com>",
+  "author": "Russell Gillespie <russell.gillespie@nothwestern.edu>",
   "license": "",
   "bugs": {
-    "url": "http://github.com/openshift/nodejs-ex/issues"
+    "url": "https://github.com/r-gillespie/node/issues"
   },
-  "homepage": "http://github.com/openshift/nodejs-ex"
+  "homepage": "https://github.com/r-gillespie/node"
 }
