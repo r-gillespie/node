@@ -77,8 +77,8 @@ app.get('/fullscreen', function (req, res) {
   res.render('fullscreen.html');
 });
 
-app.get('/test', function (req, res) {
-  res.render('test.html'); 
+app.get('/d3', function (req, res) {
+  res.render('d3.html'); 
 });
 
 app.get('/pagecount', function (req, res) {
