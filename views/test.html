@@ -3,6 +3,21 @@
 <html lang='en'>
 <head>
   <title>test</title>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js'></script>
+    <script type="text/javascript">
+		function foo(data) {
+			$("h1").html(data.battleTag);
+		}
+ 
+		$(document).ready(
+		function(){
+			$.ajax({
+			  url: "https://us.api.battle.net/d3/profile/xmrfxhermano-1386/?locale=en_US&callback=jsonp&apikey=t9k88nhjagp4wcay3u8nxc7tyqp8zyuy",
+			  type: 'GET',
+			  dataType: 'jsonp'
+			});
+		});
+	</script>
 </head>
 
 <body>
