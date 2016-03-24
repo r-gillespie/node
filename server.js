@@ -78,6 +78,7 @@ app.get('/fullscreen', function (req, res) {
 });
 
 app.get('/d3', function (req, res) {
+  var apikey = process.env.BATTLENET_API_KEY;
   res.render('d3.html'); 
 });
 
