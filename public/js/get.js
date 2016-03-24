@@ -7,7 +7,7 @@ $(function() {
             url: "https://us.api.battle.net/d3/profile/" + $input + "/",
             data: {
                 locale: "en_US",
-                apikey: apikey;
+                apikey: apikey,
             },
             //jsonp: "callback",
             success: function(data){
