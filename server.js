@@ -78,8 +78,13 @@ app.get('/fullscreen', function (req, res) {
 });
 
 app.get('/d3', function (req, res) {
-  var apikey = process.env.BATTLENET_API_KEY;
   res.render('d3.html'); 
+});
+
+app.use(express.bodyParser());
+
+app.post('/', function(request, response) {
+   console.log(request.body.user.battletag); 
 });
 
 app.get('/pagecount', function (req, res) {

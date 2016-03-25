@@ -8,14 +8,20 @@
 </head>
 
 <body>
-    <div id="content">
-        <h1>D3 Hero List</h1>
-        <div id="form">
-            <p>Enter your battleTag</p>
-            <input id='formtext' type='text'></input>
-            <button id='submit'>Submit</button>
-        </div>
-    </div>
+  <div id="content">
+    <h1>D3 Hero List</h1>
+    <div id="form">
+      <p>Enter your battleTag</p>
+      <input id='formtext' type='text'></input>
+      <button id='submit'>Submit</button>
+    </div> <!-- form -->
+    <div id="form2">
+        <form method="post" action="/">
+          <input type="text" name="user[battletag]">
+          <input type="submit" value="Submit">
+        </form>
+    </div> <!-- form2 -->
+  </div> <!-- content -->
 
 </body>
 
