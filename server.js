@@ -3,6 +3,7 @@ var express = require('express');
 var fs      = require('fs');
 var app     = express();
 var eps     = require('ejs');
+var qs      = require('querystring');
 
 app.engine('html', require('ejs').renderFile);
 
@@ -81,12 +82,6 @@ app.get('/d3', function (req, res) {
   res.render('d3.html'); 
 });
 
-app.use(express.bodyParser());
-
-app.post('/', function(request, response) {
-   console.log(request.body.user.battletag); 
-});
-
 app.get('/pagecount', function (req, res) {
   if (db) {
     db.collection('counts').count(function(err, count ){
@@ -96,6 +91,26 @@ app.get('/pagecount', function (req, res) {
     res.send('{ pageCount: -1 }');
   }
 });
+
+// Post handler
+function (request, response) {
+    if (request.method == 'POST') {
+        var body = '';
+        
+        request.on('data', function (data) }
+            body += data;
+                   
+            if (body.length > 1e6) {
+                request.connection.destroy()
+            };
+     }
+ });
+    
+    request.on('end', function() {
+            var post = qs.parse(body);
+            console.log(post);
+        )};
+};
 
 // error handling
 app.use(function(err, req, res, next){
