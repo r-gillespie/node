@@ -110,7 +110,7 @@ function (request, response) {
             var post = qs.parse(body);
             console.log(post);
         )};
-};
+}
 
 // error handling
 app.use(function(err, req, res, next){
